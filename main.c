@@ -13,8 +13,8 @@
 
 int main()
 {
-  char *prompt;
-  char *curr_dir, *curr_user;
+  char buffer[1024];
+  char *prompt,*curr_dir, *curr_user;
   pid_t pid; /* process PID */
   int fd; /* process file descriptors */
   TOKEN term;
@@ -22,7 +22,7 @@ int main()
   ignoresig();
 
   curr_user = getlogin();
-  curr_dir = (char *)get_current_dir_name();
+  curr_dir = getcwd(buffer,sizeof(buffer));
 
   /* If no 'PS2' environment variable is defined the shell prompt will be based
      on the curr_user and curr_dir values.
@@ -42,7 +42,7 @@ int main()
      if(term != T_AMP && pid != 0)
        waitfor(pid);
      if(term == T_NL)
-       printf("%s@%s %s",curr_user, get_current_dir_name(), prompt);
+       printf("%s@%s %s",curr_user, getcwd(buffer,sizeof(buffer)), prompt);
      for(fd = 3; fd < 20; fd++)
        close(fd); /* ignore errors while closing */
    }
