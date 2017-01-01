@@ -27,4 +27,6 @@ code safety.**
 ### Use
 
 Just clone the repo with git and then use the make command. An executable
-called 'microshell' will then be available.
+called 'microshell' will then be available. The resulting binary is 'stripped'.
+Including debug information requires using 'make debug' and the resulting
+shell executable is then called 'microshell_d'.

@@ -5,7 +5,7 @@ objects = main.o builtin.o shell_err.o gettoken.o command.o invoke.o ignoresig.o
 ccflags = -c -w
 
 microshell : $(objects) 
-	@gcc -o microshell $(objects)
+	@gcc -s -o microshell $(objects)
 
 main.o :  main.c commdefs.h
 	@gcc $(ccflags) main.c
@@ -38,5 +38,7 @@ waitfor.o: waitfor.c commdefs.h
 	@gcc $(ccflags) waitfor.c
 
 clean: 
-	rm -f microshell $(objects)
+	rm -f microshell* $(objects)
 
+debug: $(objects)
+	@gcc -g -o microshell_d $(objects)
