@@ -11,7 +11,7 @@
            the shell will be back here.
 */
 
-main()
+int main()
 {
   char *prompt;
   char *curr_dir, *curr_user;
