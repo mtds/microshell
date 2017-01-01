@@ -4,9 +4,7 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <errno.h>
+#include "commdefs.h"
 
 /** shell_err(): prints the error message of a syscall **/
 
@@ -26,6 +24,6 @@ void shell_err(char *msg)
 
 void fatal(char *msg)
 {
- fprintf(stderr,"ERROR: %s\n",msg);
- exit(1);
+  fprintf(stderr,"ERROR: %s\n",msg);
+  exit(1);
 }
