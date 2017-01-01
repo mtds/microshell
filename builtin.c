@@ -63,7 +63,6 @@ void asg(int argc, char *argv[])
 {
   char *name, *val, *token;
   char *append;
-  int i;
  
   if(argc != 1)
      printf("Too many arguments\n");
