@@ -46,4 +46,5 @@ int main()
      for(fd = 3; fd < 20; fd++)
        close(fd); /* ignore errors while closing */
    }
+   printf("\n"); /* Just print a new line after exit */
 }
