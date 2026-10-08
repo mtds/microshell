@@ -1,0 +1,7 @@
+# Object files
+*.o
+
+# Shell executables
+src/microshell
+src/microshell_d
+src/microshell_asan
