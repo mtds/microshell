@@ -5,53 +5,26 @@
  */
 
 #include "commdefs.h"
-#define MAXSIG 19
 
 /* statusprt(): check the status code of a process */
 void statusprt(pid_t pid, int status)
 {
   int code;
 
-  static char *sigmsg[]= {
-    "",
-    "Hangup",
-    "Interrupt",
-    "Quit",
-    "Illegal instruction",
-    "Trace trap",
-    "IOT instruction",
-    "EMT instruction",
-    "Floating point exception",
-    "Kill",
-    "Bus error",
-    "Segmentation violation",
-    "Bad arg to sys call",
-    "Write on pipe",
-    "Alarm clock",
-    "Terminate signal",
-    "User signal 1",
-    "User signal 2",
-    "Death of child",
-    "Power fail"
-  };
-
   if(status != 0 && pid != 0)
-    printf("Process %d: ",pid);
+    printf("Process %d: ",(int)pid);
 
-   if(lowbyte(status) == 0)
+   if(WIFEXITED(status))
    {
-    if((code = highbyte(status)) != 0)
+    if((code = WEXITSTATUS(status)) != 0)
       printf("Exit code %d\n", code);
-   } 
-   else 
+   }
+   else if(WIFSIGNALED(status))
    {
-     if((code = status & 0177) <= MAXSIG)
-       printf("%s",sigmsg[code]);
-     else
-       printf("Signal #%d", code);
+     printf("%s", strsignal(WTERMSIG(status)));
 
-     if((status & 0200) == 0200)
+     if(WCOREDUMP(status))
        printf("- core dumped");
      printf("\n");
    }
-}	
+}

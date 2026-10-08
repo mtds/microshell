@@ -12,7 +12,7 @@
 #include "commdefs.h"
 
 /* command(): execute commands from the shell. */
-TOKEN command(int *waitpid, BOOLEAN makepipe,int *pipefdp)
+TOKEN command(pid_t *waitpid, BOOLEAN makepipe, int *pipefdp)
 {
  TOKEN token, term;
  int argc, srcfd, dstfd, pfd[2];
@@ -20,15 +20,17 @@ TOKEN command(int *waitpid, BOOLEAN makepipe,int *pipefdp)
 
  char *argv[MAXARG+1], srcfile[MAXFNAME], dstfile[MAXFNAME];
  char word[MAXWORD];
- BOOLEAN append;
+ BOOLEAN append = FALSE;
 
  argc = 0;
  srcfd = 0;
  dstfd = 1;
+ srcfile[0] = '\0';
+ dstfile[0] = '\0';
 
  while(1)
    {
-     switch(token = gettoken(word))
+     switch(token = gettoken(word, sizeof(word)))
        {
          case T_WORD:
 		     if(argc == MAXARG)
@@ -50,7 +52,7 @@ TOKEN command(int *waitpid, BOOLEAN makepipe,int *pipefdp)
 		       fprintf(stderr,"Extra <\n");
 		       break;
 		      }	     
-		     if(gettoken(srcfile) != T_WORD)
+		     if(gettoken(srcfile, sizeof(srcfile)) != T_WORD)
 		      {
 		       fprintf(stderr,"< not permitted\n");
 		       break;
@@ -64,7 +66,7 @@ TOKEN command(int *waitpid, BOOLEAN makepipe,int *pipefdp)
 		       fprintf(stderr, "Extra > or >>\n");
 		       break;
 		      }	     
-		     if(gettoken(dstfile) != T_WORD)
+		     if(gettoken(dstfile, sizeof(dstfile)) != T_WORD)
 		      {
 		       fprintf(stderr, "> or >> not permitted\n");
 		       break;

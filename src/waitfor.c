@@ -13,9 +13,10 @@ void waitfor(pid_t pid)
   pid_t wpid; 
   int status;
 
-  while((wpid = wait(&status)) != pid && wpid != -1)
-    statusprt(wpid, status);
-
-  if(wpid == pid)
-    statusprt(0, status);                	  
+  while((wpid = wait(&status)) != -1)
+    {
+      statusprt(wpid, status);
+      if(wpid == pid)
+        break;
+    }
 }

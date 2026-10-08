@@ -6,58 +6,53 @@
 
 #include "commdefs.h"
 
-/* redirect(): implements I/O redirection */
-void redirect(int srcfd, char *srcfile, int dstfd, char *dstfile, BOOLEAN append, BOOLEAN bckgrnd)
+/* redirect(): implements I/O redirection; it runs in the child process. */
+void redirect(int srcfd, const char *srcfile, int dstfd, const char *dstfile, BOOLEAN append, BOOLEAN bckgrnd)
 {
   int flags, fd;
 
   if(srcfd == 0 && bckgrnd)
    {
-    strcpy(srcfile,"/dev/null");
-    srcfd = -2;
-   }	  
+    if((srcfd = open("/dev/null", O_RDONLY)) == -1)
+      shell_err("open /dev/null");
+   }
 
   if(srcfd != 0)
    {
-    if(close(0) == -1)
-      shell_err("close");
     if(srcfd > 0)
-     {
-      if(dup(srcfd) != 0)
-        fatal("dup");	      
-     }	    
-   
-    else if (open(srcfile, O_RDONLY, 0) == -1)
+      fd = srcfd;
+
+    else if((fd = open(srcfile, O_RDONLY)) == -1)
      {
       fprintf(stderr, "It is not possible to open %s\n", srcfile);
-      exit(0);
+      _exit(1);
      }
+
+    if(dup2(fd, 0) == -1)
+      fatal("dup2");
+    if(fd > 0)
+      close(fd);
    }
 
   if(dstfd != 1)
    {
-    if(close(1) == -1)
-     shell_err("close");	    
     if(dstfd > 1)
-     {
-      if(dup(dstfd) != 1)
-       fatal("dup");	      
-     }	    
+      fd = dstfd;
+
     else
      {
-      flags = O_WRONLY | O_CREAT;
-      if(!append)
-       flags |= O_TRUNC;
-      if(open(dstfile, flags, 0666) == -1)
+      flags = O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC);
+      if((fd = open(dstfile, flags, 0644)) == -1)
        {
         fprintf(stderr,"It is not possible to create %s\n",dstfile);
-	exit(0);
+        _exit(1);
        }
-      if(append)
-        if(lseek(1, 0L, 2) == -1)
-	 shell_err("lseek");	
      }
+
+    if(dup2(fd, 1) == -1)
+      fatal("dup2");
+    if(fd > 1)
+      close(fd);
    }
-  for(fd = 3; fd < 20; fd ++)
-   close(fd);	  
-}	
+  closefds(3);
+}

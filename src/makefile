@@ -1,44 +1,51 @@
 # Obj files for the shell executable:
-objects = main.o builtin.o shell_err.o gettoken.o command.o invoke.o ignoresig.o redirect.o statusprt.o waitfor.o
+objects = main.o builtin.o shell_err.o gettoken.o command.o invoke.o ignoresig.o redirect.o statusprt.o waitfor.o closefds.o
 
 # GCC compiler options:
-ccflags = -c -w
+cc = gcc
+ccflags = -c -std=gnu11 -O2 -Wall -Wextra -D_FORTIFY_SOURCE=2 -fstack-protector-strong
 
-microshell : $(objects) 
-	@gcc -s -o microshell $(objects)
+microshell : $(objects)
+	@$(cc) -o microshell $(objects)
 
 main.o :  main.c commdefs.h
-	@gcc $(ccflags) main.c
+	@$(cc) $(ccflags) main.c
 
 builtin.o: builtin.c commdefs.h
-	@gcc $(ccflags) builtin.c
+	@$(cc) $(ccflags) builtin.c
 
-shell_err.o: shell_err.c
-	@gcc $(ccflags) shell_err.c
+shell_err.o: shell_err.c commdefs.h
+	@$(cc) $(ccflags) shell_err.c
 
 gettoken.o: gettoken.c commdefs.h
-	@gcc $(ccflags) gettoken.c
+	@$(cc) $(ccflags) gettoken.c
 
 command.o: command.c commdefs.h
-	@gcc $(ccflags) command.c
+	@$(cc) $(ccflags) command.c
 
 invoke.o: invoke.c commdefs.h
-	@gcc $(ccflags) invoke.c
+	@$(cc) $(ccflags) invoke.c
 
 ignoresig.o: ignoresig.c commdefs.h
-	@gcc $(ccflags) ignoresig.c
+	@$(cc) $(ccflags) ignoresig.c
 
 redirect.o: redirect.c commdefs.h
-	@gcc $(ccflags) redirect.c
+	@$(cc) $(ccflags) redirect.c
 
 statusprt.o: statusprt.c commdefs.h
-	@gcc $(ccflags) statusprt.c
+	@$(cc) $(ccflags) statusprt.c
 
 waitfor.o: waitfor.c commdefs.h
-	@gcc $(ccflags) waitfor.c
+	@$(cc) $(ccflags) waitfor.c
 
-clean: 
-	rm -f microshell* $(objects)
+closefds.o: closefds.c commdefs.h
+	@$(cc) $(ccflags) closefds.c
+
+clean:
+	rm -f microshell microshell_d microshell_asan $(objects)
 
 debug: $(objects)
-	@gcc -g -o microshell_d $(objects)
+	@$(cc) -g -o microshell_d $(objects)
+
+asan: commdefs.h
+	@$(cc) -std=gnu11 -g -fsanitize=address,undefined -fno-omit-frame-pointer -o microshell_asan *.c

@@ -8,11 +8,11 @@
 
 /** shell_err(): prints the error message of a syscall **/
 
-void shell_err(char *msg)
+void shell_err(const char *msg)
 {
   fprintf(stderr,"ERROR: %s (%d",msg, errno);
 
-  if(errno > 0 && strerror(errno))
+  if(errno > 0)
      fprintf(stderr,"; %s)\n",strerror(errno));
   else
      fprintf(stderr,")\n");
@@ -22,7 +22,7 @@ void shell_err(char *msg)
 
 /** fatal(): prints an error message then exit **/
 
-void fatal(char *msg)
+void fatal(const char *msg)
 {
   fprintf(stderr,"ERROR: %s\n",msg);
   exit(1);

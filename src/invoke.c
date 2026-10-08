@@ -7,7 +7,7 @@
 #include "commdefs.h"
 
 /* invoke(): launch a command */
-pid_t invoke(int argc, char *argv[], int srcfd, char *srcfile, int dstfd, char *dstfile, BOOLEAN append, BOOLEAN bckgrnd)
+pid_t invoke(int argc, char *argv[], int srcfd, const char *srcfile, int dstfd, const char *dstfile, BOOLEAN append, BOOLEAN bckgrnd)
 {
   pid_t pid;
 
@@ -26,7 +26,8 @@ pid_t invoke(int argc, char *argv[], int srcfd, char *srcfile, int dstfd, char *
 	    redirect(srcfd, srcfile, dstfd, dstfile, append, bckgrnd);
 	    execvp(argv[0], argv);
 	    fprintf(stderr,"Execution of %s was not possible\n", argv[0]);
-	    exit(0);
+	    fflush(stderr);
+	    _exit(127); /* 127: command not found, as in conventional shells */
 
      default:
 	     if(srcfd > 0 && close(srcfd) == -1)
@@ -34,7 +35,7 @@ pid_t invoke(int argc, char *argv[], int srcfd, char *srcfile, int dstfd, char *
 	     if(dstfd > 1 && close(dstfd) == -1)
 	       shell_err("close dst");
 	     if(bckgrnd)
-	       printf("%d\n",pid);	     
+	       printf("%ld\n",(long)pid);
 	     return (pid);
    }
-}	
+}
